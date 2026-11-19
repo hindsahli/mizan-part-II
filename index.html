@@ -24,6 +24,19 @@
         </p>
       </div>
       <div class="flex items-center gap-4">
+        <a
+          href="#status-message"
+          class="bg-gold text-white py-2 px-4 rounded-[5px] hover:opacity-90"
+        >
+          Prix du jour
+        </a>
+
+        <a
+          href="#catalogue-section"
+          class="bg-gold text-white py-2 px-4 rounded-[5px] hover:opacity-90"
+        >
+          Catalogue
+        </a>
         <select
           id="currency-select"
           name="currency"
@@ -33,13 +46,6 @@
           <option value="USD">USD</option>
           <option value="EUR">EUR</option>
         </select>
-        <button
-          id="refresh-button"
-          type="button"
-          class="bg-gold text-white py-2 px-4 rounded-[5px] hover:opacity-90"
-        >
-          Actualiser
-        </button>
       </div>
     </header>
 
@@ -56,8 +62,16 @@
 
             <p id="status-message" class="text-sm"></p>
           </div>
-
-          <p id="last-update" class="text-sm text-gray-500"></p>
+          <div class="flex items-center gap-3">
+            <p id="last-update" class="text-sm text-gray-500"></p>
+            <button
+              id="refresh-button"
+              type="button"
+              class="bg-gold text-white py-2 px-4 rounded-[5px] hover:opacity-90"
+            >
+              Actualiser
+            </button>
+          </div>
         </div>
       </section>
 
@@ -185,6 +199,143 @@
           id="estimator-result"
           class="hidden mt-6 border border-soft-beige rounded-lg p-5"
         ></div>
+      </section>
+
+      <section
+        id="catalogue-section"
+        class="bg-white border border-soft-beige rounded-lg p-6 mb-10"
+      >
+        <div class="flex justify-between items-center mb-6">
+          <div>
+            <h2 class="text-xl font-bold">Catalogue des articles</h2>
+            <p class="text-sm text-gray-500 mt-1">
+              Gérez les bijoux, lingots et pièces disponibles.
+            </p>
+          </div>
+
+          <button
+            id="add-article-button"
+            type="button"
+            class="bg-gold text-white py-2 px-4 rounded-[5px] hover:opacity-90"
+          >
+            Ajouter un article
+          </button>
+        </div>
+
+        <div
+          id="offline-banner"
+          class="hidden bg-yellow-100 text-yellow-800 rounded-lg p-4 mb-5"
+        >
+          <p id="offline-message">
+            Vous êtes hors ligne. Les données affichées proviennent du cache.
+          </p>
+          <p id="cache-timestamp" class="text-sm mt-1"></p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div>
+            <label for="search-input" class="block font-medium mb-1">
+              Rechercher
+            </label>
+            <input
+              id="search-input"
+              type="text"
+              placeholder="Rechercher un article..."
+              class="w-full rounded border border-soft-beige px-3 py-2"
+            />
+          </div>
+
+          <div>
+            <label for="status-filter" class="block font-medium mb-1">
+              Filtrer par statut
+            </label>
+            <select
+              id="status-filter"
+              class="w-full rounded border border-soft-beige px-3 py-2 bg-white"
+            >
+              <option value="all">Tous les articles</option>
+              <option value="available">Disponible</option>
+              <option value="reserved">Réservé</option>
+              <option value="sold">Vendu</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="sort-select" class="block font-medium mb-1">
+              Trier par
+            </label>
+            <select
+              id="sort-select"
+              class="w-full rounded border border-soft-beige px-3 py-2 bg-white"
+            >
+              <option value="title">Titre</option>
+              <option value="price">Prix</option>
+              <option value="date">Date</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex justify-between items-center mb-6">
+          <label class="flex items-center gap-2">
+            <input id="favorites-filter" type="checkbox" />
+            Afficher uniquement les favoris
+          </label>
+
+          <button
+            id="catalogue-refresh"
+            type="button"
+            class="border border-soft-beige rounded-[5px] px-4 py-2 hover:bg-soft-beige"
+          >
+            Rafraîchir
+          </button>
+        </div>
+
+        <!-- Loading -->
+        <div id="catalogue-loading" class="hidden text-center py-8">
+          <p class="text-gray-500">Chargement des articles...</p>
+        </div>
+
+        <!-- Error -->
+        <div
+          id="catalogue-error"
+          class="hidden border border-red-300 bg-red-50 rounded-lg p-5 text-center"
+        >
+          <p id="catalogue-error-message" class="text-error mb-3"></p>
+
+          <button
+            id="catalogue-retry"
+            type="button"
+            class="bg-dark-bleu text-white py-2 px-5 rounded-[5px]"
+          >
+            Réessayer
+          </button>
+        </div>
+
+        <!-- Empty -->
+        <div id="catalogue-empty" class="hidden text-center py-8">
+          <p class="text-gray-500 mb-3">Aucun article trouvé.</p>
+
+          <button
+            id="reset-filters"
+            type="button"
+            class="bg-dark-bleu text-white py-2 px-5 rounded-[5px]"
+          >
+            Réinitialiser les filtres
+          </button>
+        </div>
+
+        <!-- Articles -->
+        <div
+          id="catalogue-list"
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+        ></div>
+
+        <!-- Success message -->
+        <p
+          id="catalogue-success"
+          class="hidden text-green-700 bg-green-50 rounded-lg p-4 mt-5"
+          aria-live="polite"
+        ></p>
       </section>
     </main>
 
