@@ -115,20 +115,13 @@ export function renderMetalCards() {
     update.textContent = `Mis à jour le ${state.lastUpdate}`;
 
     historyLink.textContent = "Voir l'historique";
-
-    if (metal.metal === "Or") {
-      historyLink.href = "#historique-metal";
-    } else {
-      historyLink.href = "#historique-metal";
-    }
+    historyLink.href = "#historique-metal";
 
     card.className =
       "bg-white border border-soft-beige rounded-lg p-6 flex flex-col gap-3";
 
     metalName.className = "text-xl font-bold";
-
     price.className = "text-3xl font-bold";
-
     update.className = "text-sm text-gray-500";
     historyLink.className = "text-sm font-semibold underline";
 
@@ -137,6 +130,7 @@ export function renderMetalCards() {
     cards.appendChild(card);
   });
 }
+
 const estimatorResult = document.getElementById("estimator-result");
 
 export function renderMetalEstimation(weight, metal) {
@@ -149,6 +143,7 @@ export function renderMetalEstimation(weight, metal) {
   );
 
   let currencySymbol = "";
+
   if (state.currency === "MAD") {
     currencySymbol = "MAD";
   } else if (state.currency === "EUR") {
@@ -164,7 +159,6 @@ export function renderMetalEstimation(weight, metal) {
   const result = document.createElement("p");
 
   title.textContent = "Valeur estimée";
-
   result.textContent = `${convertedPrice.toFixed(2)} ${currencySymbol}`;
 
   title.className = "text-lg font-bold mb-2";
@@ -280,4 +274,60 @@ export function renderChart(prices) {
 
     graph.appendChild(day);
   }
+}
+
+//-------------------------------------------
+export function renderCatalogue(articles) {
+  const catalogueList = document.getElementById("catalogue-list");
+
+  catalogueList.innerHTML = "";
+
+  if (!articles || articles.length === 0) {
+    const message = document.createElement("p");
+
+    message.textContent = "Aucun article trouvé.";
+    message.className = "text-center text-gray-500 p-4";
+
+    catalogueList.appendChild(message);
+    return;
+  }
+
+  articles.forEach((article) => {
+    const card = document.createElement("div");
+    const leftSide = document.createElement("div");
+    const rightSide = document.createElement("div");
+    const title = document.createElement("p");
+    const description = document.createElement("p");
+    const price = document.createElement("p");
+    const date = document.createElement("p");
+    const status = document.createElement("p");
+    const detailButton = document.createElement("button");
+
+    title.textContent = article.title;
+    description.textContent = article.description;
+    price.textContent = `${article.price} MAD`;
+    date.textContent = article.date;
+    status.textContent = article.status;
+
+    detailButton.textContent = "Voir détail";
+    detailButton.className =
+      "detail-button bg-dark-bleu text-white px-3 py-2 rounded";
+    detailButton.dataset.id = article.id;
+
+    leftSide.className =
+      "flex flex-col md:flex-row md:items-center gap-3 md:gap-6";
+
+    rightSide.className =
+      "flex flex-col md:flex-row md:items-center gap-3 mt-3 md:mt-0";
+
+    card.className =
+      "flex flex-col md:flex-row md:items-center justify-between p-4 border rounded-lg mb-3 gap-3";
+
+    leftSide.append(title, description, price, date);
+    rightSide.append(status, detailButton);
+
+    card.append(leftSide, rightSide);
+
+    catalogueList.appendChild(card);
+  });
 }

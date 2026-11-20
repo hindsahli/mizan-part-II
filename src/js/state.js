@@ -30,3 +30,13 @@ export const state = {
   error: null,
   lastUpdate: null,
 };
+
+//-------------------------------------------
+
+export const catalogue = {
+  articles: null,
+  sortedByPrice: null,
+  sortedByDate: null,
+  sortedByTitre: null,
+  error: null,
+};

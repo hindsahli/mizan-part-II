@@ -1,11 +1,18 @@
-import { state } from "./state.js";
+import { state, catalogue } from "./state.js";
 import {
   fetchCurrentPrices,
   goldHistory,
   silverHistory,
   fetchExchangeRates,
+  getArticles,
+  getArticle,
 } from "./api.js";
-import { render, renderMetalEstimation, renderChart } from "./render.js";
+import {
+  render,
+  renderMetalEstimation,
+  renderChart,
+  renderCatalogue,
+} from "./render.js";
 import {
   toGram,
   goldWeekPrices,
@@ -20,6 +27,11 @@ const currencySelect = document.getElementById("currency-select");
 const historyMetal = document.getElementById("history-metal");
 const history7Days = document.getElementById("history-7-days");
 const history30Days = document.getElementById("history-30-days");
+
+const searchInput = document.getElementById("search-input");
+const statusFilter = document.getElementById("status-filter");
+const sortSelect = document.getElementById("sort-select");
+const catalogueList = document.getElementById("catalogue-list");
 
 let historyPeriod = "week";
 
@@ -93,7 +105,6 @@ async function loadPrices() {
 
 function init() {
   const refreshButton = document.getElementById("refresh-button");
-
   const retryButton = document.getElementById("retry-button");
 
   state.currency = loadCurrency();
@@ -103,6 +114,7 @@ function init() {
   refreshButton.addEventListener("click", () => {
     location.reload();
   });
+
   retryButton.addEventListener("click", loadPrices);
 
   currencySelect.addEventListener("change", () => {
@@ -118,6 +130,7 @@ function init() {
   });
 
   loadPrices();
+
   history7Days.addEventListener("click", () => {
     historyPeriod = "week";
     updateHistoryChart();
@@ -152,7 +165,6 @@ estimatorForm.addEventListener("submit", (e) => {
   const weightError = document.getElementById("weight-error");
 
   const weight = Number(weightInput.value);
-
   const metal = metalSelect.value;
 
   weightError.textContent = "";
@@ -204,3 +216,94 @@ function updateHistoryChart() {
     renderChart(prices);
   }
 }
+
+//----------------------------------------------------
+
+async function loadArticles() {
+  try {
+    const articles = await getArticles();
+
+    catalogue.articles = articles;
+
+    updateCatalogue();
+  } catch (error) {
+    catalogue.error = error.message;
+    console.error(error);
+
+    renderCatalogue([]);
+  }
+}
+
+function updateCatalogue() {
+  if (!catalogue.articles) {
+    return;
+  }
+
+  let filteredArticles = [...catalogue.articles];
+  const searchValue = searchInput.value.toLowerCase();
+
+  filteredArticles = filteredArticles.filter((article) =>
+    article.title.toLowerCase().includes(searchValue),
+  );
+
+  const statusValue = statusFilter.value;
+
+  if (statusValue !== "all") {
+    filteredArticles = filteredArticles.filter(
+      (article) => article.status === statusValue,
+    );
+  }
+
+
+  const sortValue = sortSelect.value;
+
+  if (sortValue === "title") {
+    filteredArticles.sort((a, b) => a.title.localeCompare(b.title));
+  } else if (sortValue === "price") {
+    filteredArticles.sort((a, b) => Number(a.price) - Number(b.price));
+  } else if (sortValue === "date") {
+    filteredArticles.sort((a, b) => new Date(a.date) - new Date(b.date));
+  }
+
+  renderCatalogue(filteredArticles);
+}
+
+searchInput.addEventListener("input", updateCatalogue);
+statusFilter.addEventListener("change", updateCatalogue);
+sortSelect.addEventListener("change", updateCatalogue);
+
+catalogueList.addEventListener("click", async (e) => {
+  if (e.target.classList.contains("detail-button")) {
+    const id = e.target.dataset.id;
+
+    try {
+      const article = await getArticle(id);
+
+      const details = document.createElement("div");
+      const title = document.createElement("h3");
+      const description = document.createElement("p");
+      const price = document.createElement("p");
+      const status = document.createElement("p");
+      const date = document.createElement("p");
+
+      title.textContent = article.title;
+      description.textContent = article.description;
+      price.textContent = `Prix : ${article.price} MAD`;
+      status.textContent = `Statut : ${article.status}`;
+      date.textContent = `Date : ${article.date}`;
+
+      details.className =
+        "bg-white border border-soft-beige rounded-lg p-5 mt-4";
+
+      title.className = "text-xl font-bold mb-3";
+
+      details.append(title, description, price, status, date);
+
+      catalogueList.appendChild(details);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+});
+
+loadArticles();
